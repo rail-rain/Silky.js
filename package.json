@@ -1,0 +1,17 @@
+{
+  "name": "silky",
+  "main": "./build/silky.js",
+  "version": "0.0.0",
+  "description": "A short description of your package",
+  "keywords": [],
+  "repository": "https://github.com/rail-rain/silky",
+  "license": "MIT",
+  "dependencies": {
+    "html2hs-args": "^0.1.2",
+    "mustache": "^2.1.3",
+    "virtual-dom": "^2.0.1"
+  },
+  "devDependencies": {
+    "browserify": "^11.0.0"
+  }
+}

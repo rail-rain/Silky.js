@@ -1,0 +1,32 @@
+doctype html
+html
+  head
+    meta(charset='utf-8')
+    title silky
+  body
+    script(src="./silky.js", charset="utf-8")
+      
+    #sample
+      
+    script#sample-template(type="text/silky")
+      #foo
+        button#btn(type="button") foo
+        ul
+          {{#foo}}
+          li {{.}}
+          {{/foo}}
+            
+    script(type="text/javascript").
+      var data = {
+        foo: ["foo"],
+        bar: {
+          foo: "bar"
+        }
+      };
+      silky("sample", "sample-template", data);
+      
+      document.getElementById("btn").addEventListener("click", function () {
+        data.foo.push("foo");
+        data.bar.foo = "baz";
+        console.log(data);
+      });

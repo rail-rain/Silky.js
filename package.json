@@ -9,6 +9,7 @@
   "dependencies": {
     "html2hs-args": "^0.1.2",
     "mustache": "^2.1.3",
+    "observe-deep": "^0.1.0",
     "virtual-dom": "^2.0.1"
   },
   "devDependencies": {

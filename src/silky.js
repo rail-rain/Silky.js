@@ -4,6 +4,7 @@
   var vd = require('virtual-dom');
   var html2hs = require('html2hs-args');
   var mustache = require('mustache');
+  var observeDeep = require('observe-deep');
   
   window.silky = function (elId, templateId, data) {
     var template = document.getElementById(templateId);
@@ -18,7 +19,7 @@
       var el = document.getElementById(elId);
       el.parentNode.replaceChild(rootNode, el);
       
-      Object.observe(data, function () {
+      observeDeep(data, function () {
         mustacheVdRender(template, data, function (newTree) {
           var patches = vd.diff(tree, newTree);
           rootNode = vd.patch(rootNode, patches);

@@ -18,15 +18,11 @@ html
             
     script(type="text/javascript").
       var data = {
-        foo: ["foo"],
-        bar: {
-          foo: "bar"
-        }
+        foo: ["foo"]
       };
       silky("sample", "sample-template", data);
       
       document.getElementById("btn").addEventListener("click", function () {
         data.foo.push("foo");
-        data.bar.foo = "baz";
         console.log(data);
       });

@@ -6,23 +6,46 @@ html
   body
     script(src="./silky.js", charset="utf-8")
       
-    #sample
+    #sample1
+    #sample2
       
     script#sample-template(type="text/silky")
       #foo
-        button#btn(type="button") foo
+        button(id="btn{{id}}", type="button") foo
         ul
           {{#foo}}
           li {{.}}
           {{/foo}}
             
     script(type="text/javascript").
-      var data = {
-        foo: ["foo"]
-      };
-      silky("sample", "sample-template", data);
-      
-      document.getElementById("btn").addEventListener("click", function () {
-        data.foo.push("foo");
-        console.log(data);
+      silky.component("sample", {
+        template: "sample-template",
+        data: function () {
+          return {
+            id :"1",
+            foo: ["foo"]
+          };
+        }
       });
+      
+      var data1 = silky({
+        el: "sample1", 
+        component: "sample"
+      });
+      data1.id = "1";
+      
+      var data2 = silky({
+        el: "sample2", 
+        component: "sample"
+      });
+      data2.id = "2";
+      
+      setTimeout(function () {
+        console.log(document.getElementById("btn1"));
+        document.getElementById("btn1").addEventListener("click", function () {
+          data1.foo.push("foo");
+        });
+        document.getElementById("btn2").addEventListener("click", function () {
+          data2.foo.push("foo");
+        });
+      }, 2000)

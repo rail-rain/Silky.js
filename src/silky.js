@@ -6,13 +6,25 @@
   var mustache = require('mustache');
   var observeDeep = require('observe-deep');
   
-  window.silky = function (elId, templateId, data) {
-    var template = document.getElementById(templateId);
-    if (template.getAttribute("type") !== "text/silky") {
-      console.log("template script type not a \"silky\"");
-      return;
+  var components = {};
+  
+  var silky = function (option) {
+    if (option.component === undefined) {
+      return createSilkyInstance(option.el, templateParse(option.template), option.data);
+    } else {
+      var component = components[option.component];
+      return createSilkyInstance(option.el, component.template, component.data());
     }
-    template = template.textContent;
+  }
+  
+  silky.component = function (id, option) {
+    components[id] = {
+      template: templateParse(option.template),
+      data: option.data
+    };
+  };
+  
+  var createSilkyInstance = function (elId, template, data) {
     
     mustacheVdRender(template, data, function (tree) {
       var rootNode = vd.create(tree);
@@ -27,7 +39,25 @@
         });
       });
     });
+    return data;
   };
+  
+  window.silky = silky;
+  
+  var templateParse = function (templateString) {
+    var template = document.getElementById(templateString);
+    if (template === null) {
+      return templateString;
+    } else {
+      if (template.getAttribute("type") === "text/silky") {
+        template.parentNode.removeChild(template);
+        return template.textContent;
+      } else {
+        console.log("template script type not a \"text/silky\"");
+        return;
+      }
+    }
+  }
   
   var mustacheVdRender = function (html, data, callBack) {
     html2hs(mustache.render(html, data), vd.h, function (err, hscropt) {

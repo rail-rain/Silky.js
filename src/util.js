@@ -1,10 +1,15 @@
-var createSilkyInstance = function (elId, template, data) {
- 
-  var el = document.getElementById(elId);
-  el.parentNode.replaceChild(rootNode, el);
+var vd = require('virtual-dom');
+var html2hs = require('html2hs-args');
+var mustache = require('mustache');
+var observeDeep = require('observe-deep');
+
+var createSilky = function (elId, template, data) {
    
    mustacheVdRender(template, data, function (tree) {
-     var rootNode = vd.create(tree);
+    var rootNode = vd.create(tree);
+    var el = document.getElementById(elId);
+    el.parentNode.replaceChild(rootNode, el);
+    
     observeDeep(data, function () {
       mustacheVdRender(template, data, function (newTree) {
         var patches = vd.diff(tree, newTree);
@@ -29,10 +34,16 @@ var templateParse = function (templateString) {
       return;
     }
   }
-}
+};
 
- var mustacheVdRender = function (html, data, callBack) {
+var mustacheVdRender = function (html, data, callBack) {
    html2hs(mustache.render(html, data), vd.h, function (err, hscropt) {
      callBack(hscropt);
    });
- };
+};
+
+module.exports = {
+  createSilky: createSilky,
+  templateParse: templateParse, 
+  mustacheVdRender: mustacheVdRender
+};

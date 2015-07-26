@@ -1,10 +1,6 @@
 (function () {
   "use strict";
-  
-  var vd = require('virtual-dom');
-  var html2hs = require('html2hs-args');
-  var mustache = require('mustache');
-  var observeDeep = require('observe-deep');
+
   var util = require('./util');
   var createSilky = util.createSilky;
   var templateParse = util.templateParse;

@@ -9,10 +9,10 @@ html
     #sample
       
     script#sample-template(type="text/silky")
-      #foo
-        input(type="text", value="{{foo}}")
-        input(type="text", value="{{bar}}")
-        input(type="text", value="{{baz}}")
+      #foo()
+        input(type="text", value="{{foo}}", data-foo="foo")
+        input(type="text", value="{{bar}}", data-foo="foo")
+        input(type="text", value="{{baz}}", data-foo="foo")
         span {{foo}}
         span {{bar}}
         span {{baz}}
@@ -20,13 +20,11 @@ html
     script(type="text/javascript").
       var data = silky.new({
         el: "sample",
-        template: "sample-template",
+        template: "sample-template"
         data: {
             foo: "foo",
             bar: "bar",
             baz: "baz"
         }
       });
-      
-      
       

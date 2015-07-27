@@ -6,6 +6,10 @@
   "keywords": [],
   "repository": "https://github.com/rail-rain/silky",
   "license": "MIT",
+  "scripts": {
+    "watch": "watchify src/silky.js -o build/silky.js",
+    "watchJ": "jade src/index.jade -o build -w"
+  },
   "dependencies": {
     "html2hs-args": "^0.1.2",
     "mustache": "^2.1.3",
@@ -13,6 +17,7 @@
     "virtual-dom": "^2.0.1"
   },
   "devDependencies": {
-    "browserify": "^11.0.0"
+    "browserify": "^11.0.0",
+    "watchify": "^3.3.0"
   }
 }

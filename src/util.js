@@ -3,46 +3,18 @@
 
   var vd = require("virtual-dom");
   var html2hs = require("html2hs-args");
-  var mustache = require("mustache");
   var observeDeep = require("observe-deep");
-  
-  var setBindAttribute = function (template) {
-    
-    var attributes = template.match(/value="{{.*?}}"/g);
-    attributes.forEach(function (corrent) {
-      var _variable = corrent.match(/{{.*}}/)[0];
-      var variable = _variable.substring(2, _variable.length - 2);
-      template = template.replace(corrent, corrent + " data-silky-bind=\"" + variable + "\" ");
-    });
-    return template;
-  };
-  
-  var setBindEvent = function (data) {
-    
-    var inputs = document.getElementsByTagName("input");
-    for (var i = 0; i < inputs.length; i++) {
-      var corrent = inputs[i];
-      var dataKey = corrent["data-silky-bind"];
-      if (dataKey !== undefined) {
-        corrent.addEventListener("change", function (event) {
-          //TODO 全員おなじになる
-          data[dataKey] = event.target.value;
-        });
-        corrent["data-silky-bind"] = undefined;
-      }
-    }
-  };
+  var twoWay = require("./two-way");
   
   var createSilky = function (elId, template, data) {
-    
-    template = setBindAttribute(template);
+      template = twoWay.setBindAttribute(template);
      
      mustacheVdRender(template, data, function (tree) {
       var rootNode = vd.create(tree);
       var el = document.getElementById(elId);
       el.parentNode.replaceChild(rootNode, el);
       
-      setBindEvent(data);
+        twoWay.setBindEvent(data);
       
       observeDeep(data, function () {
         mustacheVdRender(template, data, function (newTree) {
@@ -77,7 +49,8 @@
   };
   
   var mustacheVdRender = function (html, data, callBack) {
-     html2hs(mustache.render(html, data), vd.h, function (err, hscropt) {
+    var render = silky.config.templateEngine;
+     html2hs(render(html, data), vd.h, function (err, hscropt) {
        callBack(hscropt);
      });
   };

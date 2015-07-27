@@ -1,6 +1,7 @@
 (function () {
   "use strict";
-
+  
+  var observe = require("object.observe");
   var util = require("./util");
   var createSilky = util.createSilky;
   var templateParse = util.templateParse;
@@ -31,7 +32,8 @@
   window.silky = {
     new: silkyNew,
     extend: silkyExtend,
-    component: silkyComponent
+    component: silkyComponent,
+    config: {}
   };
 
 }());

@@ -1,21 +1,24 @@
 {
   "name": "silky",
-  "main": "./build/silky.js",
+  "main": "./dist/silky.js",
   "version": "0.0.0",
   "description": "A short description of your package",
   "keywords": [],
   "repository": "https://github.com/rail-rain/silky",
   "license": "MIT",
   "scripts": {
-    "watch": "watchify src/silky.js -o build/silky.js",
-    "watchJ": "jade src/index.jade -o build -w"
+    "watch": "watchify src/silky.js -o dist/silky.js",
+    "build": "browserify src/silky.js -d -p [minifyify  --no-map] > dist/silky.min.js"
+  },
+  "dependencies": {
+    "html2template-hs": "^0.1.1",
+    "object.observe": "^0.2.4",
+    "observe-deep": "^0.1.0",
+    "virtual-dom": "^2.0.1"
   },
   "devDependencies": {
     "browserify": "^11.0.0",
-    "html2hs-args": "^0.1.2",
-    "object.observe": "^0.2.4",
-    "observe-deep": "^0.1.0",
-    "virtual-dom": "^2.0.1",
+    "minifyify": "^7.0.3",
     "watchify": "^3.3.0"
   }
 }

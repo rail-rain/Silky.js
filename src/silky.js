@@ -1,81 +1,72 @@
-(function () {
+(function() {
   "use strict";
-  
+
   var observe = require("object.observe");
-  
-  var components = {};
-  
-  var silkyNew = function (option) {
+
+  window.silky = function(option) {
     addTemplate(option.template);
     var data = createSilky(option.el, option.template, option.data);
-    callReady(option.ready, data);
+
+    if (option.ready) {
+      option.ready(data);
+    }
     return data;
   };
-  
-  var silkyExtend = function (option) {
-    addTemplate(option.template);
-    components[option.name] = {
-      template: option.template,
-      data: option.data
-    };
-  };
-  
-  var silkyComponent = function (option) {
-    var component = components[option.name];
-    var data = createSilky(option.el, component.template, component.data());
-    callReady(option.ready, data);
-    return data;
-  };
-  
-  window.silky = {
-    new: silkyNew,
-    extend: silkyExtend,
-    component: silkyComponent
-  };
 
-  var vd = require("virtual-dom");
-  var html2hs = require("html2template-hs");
-  var observeDeep = require("observe-deep");
-
+  var diff = require("virtual-dom/vtree/diff"),
+    patch = require("virtual-dom/vdom/patch"),
+    create = require("virtual-dom/vdom/create-element"),
+    h = require("virtual-dom/virtual-hyperscript"),
+    mainLoop = require("main-loop"),
+    observeDeep = require("observe-deep"),
+    html2hs = require("html2template-hs");
+    
   var createSilky = function(elId, template, data) {
-
-    var tree = templates[template](data);
-    var rootNode = vd.create(tree);
+      
+    var loop = mainLoop(data, templates[template], {
+      create: create,
+      diff: diff,
+      patch: patch
+    });
     var el = document.getElementById(elId);
-    el.parentNode.replaceChild(rootNode, el);
+    el.parentNode.replaceChild(loop.target, el);
 
     observeDeep(data, function() {
-      var newTree = templates[template](data);
-      var patches = vd.diff(tree, newTree);
-      rootNode = vd.patch(rootNode, patches);
-      tree = newTree;
+      loop.update(data);
     });
     return data;
   };
 
   var templates = {};
 
-  var addTemplate = function(templateString) {
-    var template = document.getElementById(templateString);
+  var addTemplate = function(templateId) {
+    if (templates[templateId]) {
+      return;
+    }
+    var template = document.getElementById(templateId);
 
     if (template.getAttribute("type") === "text/silky") {
       html2hs(template
         .textContent.replace(/[\n\r]/g, "")
-        .replace(/(>|<)\s+/g, "$1").replace(/\s+(>|<)/g, "$1"),
+        .replace(/(>|<)\s+/g, "$1").replace(/\s+(>|<)/g, "$1")
+        .replace(/(value="{{(.+?)}}")/g,
+        "$1 ev-change=function(t){o.$2=t.value}"),
         //TODO インライン要素内の前後の空白が消える
-        vd.h,
+        h,
         function(hsFunction) {
-          templates[templateString] = hsFunction;
+          templates[templateId] = hsFunction;
         });
+        template.parentNode.removeChild(template);
     } else {
-      console.log("template script type not a \"text/silky\"");
+      throw new Error("template script type not a \"text/silky\"");
     }
   };
-
-  var callReady = function(ready, data) {
-    if (ready) {
-      ready(data);
+  var EvStore = require("virtual-dom/node_modules/ev-store");
+  document.documentElement
+  .addEventListener("change", function (event) {
+    var changeFunction = EvStore(event.target)['change'];
+    if (changeFunction) {
+      changeFunction(event.target);
     }
-  };
+  });
 }());
-

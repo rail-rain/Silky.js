@@ -11,7 +11,8 @@
     "build": "browserify src/silky.js -d -p [minifyify  --no-map] > dist/silky.min.js"
   },
   "dependencies": {
-    "html2template-hs": "^0.1.1",
+    "html2template-hs": "^0.2.0",
+    "main-loop": "^3.1.0",
     "object.observe": "^0.2.4",
     "observe-deep": "^0.1.0",
     "virtual-dom": "^2.0.1"

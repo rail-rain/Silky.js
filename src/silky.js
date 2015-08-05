@@ -3,12 +3,14 @@
 
   var observe = require("object.observe");
 
-  window.silky = function(option) {
+  var silky = function(option) {
     addTemplate(option.template);
-    var data = createSilky(option.el, option.template, option.data);
+    var data = option.data;
+    
+    createSilky(option.el, option.template, data);
 
     if (option.ready) {
-      option.ready(data);
+      option.ready.call(data);
     }
     return data;
   };
@@ -17,24 +19,24 @@
     patch = require("virtual-dom/vdom/patch"),
     create = require("virtual-dom/vdom/create-element"),
     h = require("virtual-dom/virtual-hyperscript"),
-    mainLoop = require("main-loop"),
     observeDeep = require("observe-deep"),
-    html2hs = require("html2template-hs");
+    html2ths = require("html2template-hs");
     
   var createSilky = function(elId, template, data) {
-      
-    var loop = mainLoop(data, templates[template], {
-      create: create,
-      diff: diff,
-      patch: patch
-    });
+    
+    var render = templates[template];
+    var tree = render(data);
+    
+    var rootNode = create(tree);
     var el = document.getElementById(elId);
-    el.parentNode.replaceChild(loop.target, el);
+    el.parentNode.replaceChild(rootNode, el);
 
     observeDeep(data, function() {
-      loop.update(data);
+      var newTree = render(data);
+      var patches = diff(tree, newTree);
+      rootNode = patch(rootNode, patches);
+      tree = newTree;
     });
-    return data;
   };
 
   var templates = {};
@@ -45,28 +47,15 @@
     }
     var template = document.getElementById(templateId);
 
-    if (template.getAttribute("type") === "text/silky") {
-      html2hs(template
-        .textContent.replace(/[\n\r]/g, "")
-        .replace(/(>|<)\s+/g, "$1").replace(/\s+(>|<)/g, "$1")
-        .replace(/(value="{{(.+?)}}")/g,
-        "$1 ev-change=function(t){o.$2=t.value}"),
-        //TODO インライン要素内の前後の空白が消える
-        h,
-        function(hsFunction) {
-          templates[templateId] = hsFunction;
-        });
-        template.parentNode.removeChild(template);
-    } else {
-      throw new Error("template script type not a \"text/silky\"");
-    }
+    var hsFunction = html2ths.compile(template.textContent, h);
+    templates[templateId] = hsFunction;
+    template.parentNode.removeChild(template);
   };
-  var EvStore = require("virtual-dom/node_modules/ev-store");
-  document.documentElement
-  .addEventListener("change", function (event) {
-    var changeFunction = EvStore(event.target)['change'];
-    if (changeFunction) {
-      changeFunction(event.target);
-    }
-  });
+  
+  silky.template = {
+    registerHelper: html2ths.registerHelper,
+    unregisterHelper: html2ths.unregisterHelper
+  };
+  
+  window.silky = silky;
 }());

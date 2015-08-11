@@ -7,13 +7,16 @@
     create = require("virtual-dom/vdom/create-element"),
     observeDeep = require("observe-deep"),
     html2tvd = require("html2template-hs/virtual-dom"),
-    htmlTemplate = require("./htmlParser");
+    extend = require("virtual-dom/node_modules/error/node_modules/xtend"),
+    htmlTemplate = require("./htmlParser"),
+    eventsGroup = require("./eventsGroup");
 
   var Silky = function(option) {
     htmlTemplate.addTemplate(option.template);
     var data = option.data;
     
     createSilky(option.el, option.template, data);
+    eventsGroup.fireEventGroup(option.events, data);
 
     if (option.ready) {
       option.ready.call(data);
@@ -24,9 +27,11 @@
   var createSilky = function(elId, template, data) {
     
     var render = htmlTemplate.templates[template];
-    var tree = render(data); 
+    
+    var tree = render(extend(data, eventsGroup.createObject)); 
     
     var rootNode = create(tree);
+    
     var el = document.getElementById(elId);
     el.parentNode.replaceChild(rootNode, el);
 

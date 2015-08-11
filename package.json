@@ -1,14 +1,18 @@
 {
-  "name": "silky",
-  "main": "./dist/silky.js",
-  "version": "0.0.0",
-  "description": "A short description of your package",
-  "keywords": [],
-  "repository": "https://github.com/rail-rain/silky",
+  "name": "Silky.js",
+  "main": "./dist/Silky.min.js",
+  "version": "0.1.0",
+  "description": "This is a simple mvvm library for javascript",
+  "keywords": [
+    "data-bind",
+    "mvvm",
+    "bind"
+  ],
+  "repository": "https://github.com/rail-rain/Silky.js",
   "license": "MIT",
   "scripts": {
-    "watch": "watchify src/silky.js -o dist/silky.js",
-    "build": "browserify src/silky.js -d -p [minifyify  --no-map] > dist/silky.min.js"
+    "watch": "watchify src/index.js -o dist/Silky.js",
+    "build": "browserify src/index.js -d -p [minifyify  --no-map] > dist/Silky.min.js"
   },
   "dependencies": {
     "html2template-hs": "^0.4.1",

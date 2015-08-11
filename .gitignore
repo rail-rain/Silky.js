@@ -3,3 +3,5 @@ npm-debug.log
 node_modules
 .git
 .tern-project
+dist
+Silky.mm

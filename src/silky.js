@@ -1,10 +1,16 @@
-(function() {
-  "use strict";
+"use strict";
 
-  var observe = require("object.observe");
+  require("object.observe");
+  
+  var diff = require("virtual-dom/vtree/diff"),
+    patch = require("virtual-dom/vdom/patch"),
+    create = require("virtual-dom/vdom/create-element"),
+    observeDeep = require("observe-deep"),
+    html2tvd = require("html2template-hs/virtual-dom"),
+    htmlTemplate = require("./htmlParser");
 
-  var silky = function(option) {
-    addTemplate(option.template);
+  var Silky = function(option) {
+    htmlTemplate.addTemplate(option.template);
     var data = option.data;
     
     createSilky(option.el, option.template, data);
@@ -14,18 +20,11 @@
     }
     return data;
   };
-
-  var diff = require("virtual-dom/vtree/diff"),
-    patch = require("virtual-dom/vdom/patch"),
-    create = require("virtual-dom/vdom/create-element"),
-    h = require("virtual-dom/virtual-hyperscript"),
-    observeDeep = require("observe-deep"),
-    html2ths = require("html2template-hs");
     
   var createSilky = function(elId, template, data) {
     
-    var render = templates[template];
-    var tree = render(data);
+    var render = htmlTemplate.templates[template];
+    var tree = render(data); 
     
     var rootNode = create(tree);
     var el = document.getElementById(elId);
@@ -38,24 +37,10 @@
       tree = newTree;
     });
   };
-
-  var templates = {};
-
-  var addTemplate = function(templateId) {
-    if (templates[templateId]) {
-      return;
-    }
-    var template = document.getElementById(templateId);
-
-    var hsFunction = html2ths.compile(template.textContent, h);
-    templates[templateId] = hsFunction;
-    template.parentNode.removeChild(template);
+  
+  Silky.template = {
+    registerHelper: html2tvd.registerHelper,
+    unregisterHelper: html2tvd.unregisterHelper
   };
   
-  silky.template = {
-    registerHelper: html2ths.registerHelper,
-    unregisterHelper: html2ths.unregisterHelper
-  };
-  
-  window.silky = silky;
-}());
+  window.Silky = Silky;

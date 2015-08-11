@@ -15,8 +15,7 @@
     htmlTemplate.addTemplate(option.template);
     var data = option.data;
     
-    createSilky(option.el, option.template, data);
-    eventsGroup.fireEventGroup(option.events, data);
+    createSilky(option.el, option.template, option.groups, data);
 
     if (option.ready) {
       option.ready.call(data);
@@ -24,11 +23,12 @@
     return data;
   };
     
-  var createSilky = function(elId, template, data) {
+  var createSilky = function(elId, template, groups, data) {
     
     var render = htmlTemplate.templates[template];
     
-    var tree = render(extend(data, eventsGroup.createObject)); 
+    var groupHooks = eventsGroup(groups, data);
+    var tree = render(extend(data, groupHooks)); 
     
     var rootNode = create(tree);
     

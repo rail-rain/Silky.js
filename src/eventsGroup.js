@@ -1,30 +1,25 @@
 "use strict";
 
-var eventElements = [];
-
-var setEvents = function () {};
-setEvents.prototype.hook = function (element, propertyName) {
-  eventElements.push({
-    name: propertyName.substr("5"),
-    element: element
+var createHooks = function (groups, data) {
+  var hooks = {};
+  Object.keys(groups)
+  .forEach(function (current) {
+    hooks[current] = new groupHook(groups[current], data);
   });
+  return hooks;
 };
 
-var fireEventGroup = function (eventGroups, data) {
-  Object.keys(eventGroups)
-    .forEach(function (currentGroupName) {
-      var currentElements = eventElements
-        .filter(function (item) {
-          return item.name === currentGroupName;})
-        .map(function (item) {return item.element;});
-          
-      eventGroups[currentGroupName]
-      .apply(data, currentElements);
-    });
-  eventElements = [];
+var groupHook = function (eventGroup, data) {
+  this.members = [];
+  this.group = eventGroup;
+  this.groupLength = eventGroup.length;
+  this.data = data;
+};
+groupHook.prototype.hook = function (element) {
+  this.members.push(element);
+  if (this.groupLength === this.members.length) {
+    this.group.apply(this.data, this.members);
+  }
 };
 
-module.exports = {
-  createObject: {events: new setEvents()},
-  fireEventGroup: fireEventGroup
-};
+module.exports = createHooks;

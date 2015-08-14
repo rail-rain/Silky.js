@@ -1,5 +1,5 @@
 {
-  "name": "Silky.js",
+  "name": "silkyjs",
   "main": "./dist/Silky.min.js",
   "version": "0.1.0",
   "description": "This is a simple mvvm library for javascript",

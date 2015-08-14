@@ -1,6 +1,8 @@
 # Silky.js
 Silky is fast, light and simple
 
+This is still during the experiment therefore Possibility of change without notice
+
 ## example
 
 ```html
